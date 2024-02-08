@@ -9,14 +9,23 @@ class User < ApplicationRecord
   has_many :favorites, dependent: :destroy
 
   # フォローしている関連付け
-  has_many :relationships, class_name: "Relationship", foreign_key: "follower_id", dependent: :destroy
+  # has_many :relationships, class_name: "Relationship", foreign_key: "follower_id", dependent: :destroy
   # フォローされている関連付け
-  has_many :reverse_of_relationships, class_name: "Relationship", foreign_key: "followed_id", dependent: :destroy
+  # has_many :reverse_of_relationships, class_name: "Relationship", foreign_key: "followed_id", dependent: :destroy
   # フォローしているユーザーを取得
-  has_many :followings, through: :relationships, source: :followed
+  # has_many :followings, through: :relationships, source: :followed
   # フォロワーを取得
-  has_many :followers, through: :reverse_of_relationships, source: :follower
+  # has_many :followers, through: :reverse_of_relationships, source: :follower
 
+  # フォローしている関連付け
+  has_many :followers, class_name: "Relationship", foreign_key: "follower_id", dependent: :destroy
+  # フォローされている関連付け
+  has_many :followeds, class_name: "Relationship", foreign_key: "followed_id", dependent: :destroy
+  # フォローしているユーザーを取得
+  has_many :following_users, through: :followers, source: :followed
+  # フォロワーを取得
+  has_many :follower_users, through: :followeds, source: :follower
+  
   has_one_attached :profile_image
 
   validates :name, length: { minimum: 2, maximum: 20 }, uniqueness: true
@@ -27,16 +36,29 @@ class User < ApplicationRecord
   end
 
   # 指定したユーザーをフォローする
-  def follow(user)
-   relationships.create(followed_id: user.id)
+  # def follow(user)
+  # relationships.create(followed_id: user_id)
+  # end
+  # # 指定したユーザーのフォローを解除する
+  # def unfollow(user)
+  #   relationships.find_by(followed_id: user_id).destroy
+  # end
+  # # 指定したユーザーをフォローしているかどうかを判定
+  # def following?(user)
+  #   followings.include?(user)
+  # end
+  
+  # 指定したユーザーをフォローする
+  def follow(user_id)
+    followers.create(followed_id: user_id)
   end
   # 指定したユーザーのフォローを解除する
-  def unfollow(user)
-    relationships.find_by(followed_id: user.id).destroy
+  def unfollow(user_id)
+    followers.find_by(followed_id: user_id).destroy
   end
   # 指定したユーザーをフォローしているかどうかを判定
   def following?(user)
-    followings.include?(user)
+    following_users.include?(user)
   end
 
   def self.search_for(content, method)
