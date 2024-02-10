@@ -6,19 +6,10 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     @books = @user.books
     @book = Book.new
-
-    # # @count_books = @books.reverse_order
-    # @today_book =  @count_books.created_today
-    # @yesterday_book = @count_books.created_yesterday
-    # @this_week_book = @count_books.created_this_week
-    # @last_week_book = @count_books.created_last_week
-
-    # @books = @user.books.page(params[:page]).reverse_order
     @today_book =  @books.created_today
     @yesterday_book = @books.created_yesterday
     @this_week_book = @books.created_this_week
     @last_week_book = @books.created_last_week
-
   end
 
   def index
@@ -40,13 +31,11 @@ class UsersController < ApplicationController
   def follows
     user = User.find(params[:id])
     @users = user.following_users
-
   end
 
   def followers
     user = User.find(params[:id])
     @users = user.follower_users
-
   end
 
   private
